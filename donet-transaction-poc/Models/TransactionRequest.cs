@@ -2,8 +2,8 @@
 {
     public class TransactionRequest
     {
-        public int Ammount { get; set; }
-        public string Type { get; set; }
-        public string Description { get; set; }
+        public int Valor { get; set; }
+        public string Tipo { get; set; }
+        public string Descricao { get; set; }
     }
 }
