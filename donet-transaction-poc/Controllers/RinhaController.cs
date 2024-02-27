@@ -18,26 +18,26 @@ namespace donet_transaction_poc.Controllers
         [HttpGet("extrato")]
         public ActionResult<Extrato> Get()
         {
-            var transacao = new Transacao
-            {
-                Cliente_Id = 1,
-                Descricao = "adasda",
-                Id = 1,
-                Realizada_Em = "asdasdas",
-                Tipo = "d",
-                Valor = 12314124
-            };
-
             var test = new Extrato
             {
-                Saldo =
+                Saldo = new SaldoExtratual
                 {
                     Total = -9098,
-                    Data_Extato ="2024-01-17T02:34:41.217753Z",
+                    DataExtato = "2024-01-17T02:34:41.217753Z",
                     Limite = 1000000
 
                 },
-                Ultimas_Transacoes = []
+                UltimasTransacoes = [
+                    new Transacao {
+                        Cliente_Id = 1,
+                        Descricao = "adasda",
+                        Id = 1,
+                        RealizadaEm = "asdasdas",
+                        Tipo = "d",
+                        Valor = 12314124
+                    },
+                    new Transacao { }
+                ]
 
             };
             return Ok(test);

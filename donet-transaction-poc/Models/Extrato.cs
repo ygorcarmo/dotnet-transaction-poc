@@ -1,16 +1,20 @@
-﻿namespace donet_transaction_poc.Models
+﻿using System.Text.Json.Serialization;
+
+namespace donet_transaction_poc.Models
 {
     public class Extrato
     {
         public SaldoExtratual Saldo { get; set; }
-        public List<Transacao> Ultimas_Transacoes { get; set; }
+        [JsonPropertyName("ultimas_transacoes")]
+        public List<Transacao> UltimasTransacoes { get; set; }
 
     }
 
     public class SaldoExtratual
     {
         public int Total { get; set; }
-        public string Data_Extato { get; set; }
+        [JsonPropertyName("data_extrato")]
+        public string DataExtato { get; set; }
         public int Limite { get; set; }
     }
 

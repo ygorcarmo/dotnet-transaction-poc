@@ -11,7 +11,8 @@ namespace donet_transaction_poc.Models
         public int Valor { get; set; }
         public string Tipo { get; set; }
         public string Descricao { get; set; }
-        public string Realizada_Em { get; set; }
+        [JsonPropertyName("realizada_em")]
+        public string RealizadaEm { get; set; }
 
     }
 }
