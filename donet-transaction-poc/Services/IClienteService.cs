@@ -4,10 +4,10 @@ namespace donet_transaction_poc.Services
 {
     public interface IClienteService
     {
-        Task<bool> CreateCliente(Cliente cliente);
+        Task<int> CreateCliente(Cliente cliente);
         Task<List<Cliente>> GetClienteList();
         Task<Cliente> GetCliente(int id);
-        Task<Cliente> UpdateCliente(Cliente cliente);
-        Task<bool> DeleteCliente(int id);
+        Task<int> UpdateCliente(Cliente cliente);
+        Task<int> DeleteCliente(int id);
     }
 }

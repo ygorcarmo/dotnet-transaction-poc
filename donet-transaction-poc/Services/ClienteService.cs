@@ -14,49 +14,34 @@ namespace donet_transaction_poc.Services
 
         //  How am I going to handle the errors?
 
-        public async Task<bool> CreateCliente(Cliente cliente)
+        public async Task<int> CreateCliente(Cliente cliente)
         {
-            try
-            {
-                await _dbService.EditData("INSERT INTO clientes (nome, limite) VALUES (@Nome, @Limite);", cliente);
-                return true;
-            }
-            catch (Exception)
-            {
-                return false;
-            }
+            var affectedRows = await _dbService.EditData("INSERT INTO clientes (nome, limite) VALUES (@Nome, @Limite);", cliente);
+            return affectedRows;
         }
 
-        public async Task<bool> DeleteCliente(int id)
+        public async Task<int> DeleteCliente(int id)
         {
-            await _dbService.EditData("DELETE FROM clientes WHERE id=@id", new { id });
-            return true;
+            var affectedRows = await _dbService.EditData("DELETE FROM clientes WHERE id=@id;", new { id });
+            return affectedRows;
         }
 
         public async Task<Cliente> GetCliente(int id)
         {
-            var cliente = await _dbService.GetAsync<Cliente>("SELECT * FROM clientes WHERE id=@id", new { id });
+            var cliente = await _dbService.GetAsync<Cliente>("SELECT * FROM clientes WHERE id=@id;", new { id });
             return cliente;
         }
 
         public async Task<List<Cliente>> GetClienteList()
         {
-            var clienteList = await _dbService.GetAll<Cliente>("SELECT * FROM clientes", new { });
+            var clienteList = await _dbService.GetAll<Cliente>("SELECT * FROM clientes;", new { });
             return clienteList;
         }
 
-        public async Task<Cliente> UpdateCliente(Cliente cliente)
+        public async Task<int> UpdateCliente(Cliente cliente)
         {
-            try
-            {
-
-                await _dbService.EditData("UPDATE clientes SET nome=@Nome, limite=@Limite WHERE id=@Id", cliente);
-                return cliente;
-            }
-            catch (Exception)
-            {
-                return null;
-            }
+            var affectedRows = await _dbService.EditData("UPDATE clientes SET nome=@Nome, limite=@Limite WHERE id=@Id;", cliente);
+            return affectedRows;
         }
     }
 }
