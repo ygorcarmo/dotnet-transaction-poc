@@ -18,7 +18,7 @@ namespace donet_transaction_poc.Services
         {
             try
             {
-                await _dbService.EditData("INSERT INTO clientes (nome, limite) VALUES (@nome, @limite);", cliente);
+                await _dbService.EditData("INSERT INTO clientes (nome, limite) VALUES (@Nome, @Limite);", cliente);
                 return true;
             }
             catch (Exception)
