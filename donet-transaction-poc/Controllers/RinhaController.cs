@@ -1,4 +1,5 @@
 ﻿using donet_transaction_poc.Models;
+using donet_transaction_poc.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace donet_transaction_poc.Controllers
@@ -7,11 +8,20 @@ namespace donet_transaction_poc.Controllers
     [Route("/clientes/{id}")]
     public class RinhaController : ControllerBase
     {
-        [HttpPost("transacoes")]
-        public IActionResult Create(TransactionRequest transactionRequest)
+        private readonly IClienteService _clienteService;
+        public RinhaController(IClienteService clienteService)
         {
-            var test = new TransactionResponse { Limite = 100000, Saldo = -9098 };
-            return Ok(test);
+            _clienteService = clienteService;
+        }
+        [HttpPost("transacoes")]
+        public async Task<IActionResult> Create(TransactionRequest transactionRequest)
+        {
+
+            //var test = new TransactionResponse { Limite = 100000, Saldo = -9098 };
+            //return Ok(test);
+
+            var clientes = await _clienteService.GetClienteList();
+            return Ok(clientes);
         }
 
 
