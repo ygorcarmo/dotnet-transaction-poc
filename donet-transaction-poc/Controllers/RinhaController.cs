@@ -14,14 +14,18 @@ namespace donet_transaction_poc.Controllers
             _clienteService = clienteService;
         }
         [HttpPost("transacoes")]
-        public async Task<IActionResult> Create(TransactionRequest transactionRequest)
+        public async Task<IActionResult> Create(TransactionRequest transactionRequest, int id)
         {
 
             //var test = new TransactionResponse { Limite = 100000, Saldo = -9098 };
             //return Ok(test);
+            var response = new TransactionResponse { };
 
-            var clientes = await _clienteService.GetClienteList();
-            return Ok(clientes);
+            // Where am I getting the Id from?
+            var cliente = await _clienteService.GetCliente(id);
+            if (cliente is null)
+                return NotFound();
+            return Ok(response);
         }
 
 
