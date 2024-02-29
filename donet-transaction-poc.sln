@@ -7,6 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "donet-transaction-poc", "do
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{6E026D5E-988E-4810-94ED-4F03B34E78F8}"
 	ProjectSection(SolutionItems) = preProject
+		init.sql = init.sql
 		README.md = README.md
 	EndProjectSection
 EndProject
