@@ -13,6 +13,9 @@ builder.Services.AddSwaggerGen();
 DefaultTypeMap.MatchNamesWithUnderscores = true;
 builder.Services.AddScoped<IDbService, DbService>();
 builder.Services.AddScoped<IClienteService, ClienteService>();
+builder.Services.AddScoped<TransacaoService>();
+builder.Services.AddScoped<SaldoService>();
+
 
 var app = builder.Build();
 

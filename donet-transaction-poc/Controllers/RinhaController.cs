@@ -9,23 +9,51 @@ namespace donet_transaction_poc.Controllers
     public class RinhaController : ControllerBase
     {
         private readonly IClienteService _clienteService;
-        public RinhaController(IClienteService clienteService)
+        private readonly TransacaoService _transacaoService;
+        private readonly SaldoService _saldoService;
+        public RinhaController(IClienteService clienteService, TransacaoService transacaoService, SaldoService saldoService)
         {
             _clienteService = clienteService;
+            _transacaoService = transacaoService;
+            _saldoService = saldoService;
         }
         [HttpPost("transacoes")]
         public async Task<IActionResult> Create(TransactionRequest transactionRequest, int id)
         {
+            try
+            {
+                var response = new TransactionResponse { };
 
-            //var test = new TransactionResponse { Limite = 100000, Saldo = -9098 };
-            //return Ok(test);
-            var response = new TransactionResponse { };
+                var cliente = await _clienteService.GetCliente(id);
+                if (cliente is null)
+                    return NotFound();
 
-            // Where am I getting the Id from?
-            var cliente = await _clienteService.GetCliente(id);
-            if (cliente is null)
-                return NotFound();
-            return Ok(response);
+                if (transactionRequest.Tipo == "c")
+                {
+                    var transacao = new Transacao
+                    {
+                        Cliente_Id = id,
+                        Descricao = transactionRequest.Descricao,
+                        Tipo = transactionRequest.Tipo,
+                        Valor = transactionRequest.Valor
+                    };
+                    await _transacaoService.CreateTransacao(transacao);
+
+                    var currentSaldo = await _saldoService.GetSaldo(id);
+                    currentSaldo.Valor += transacao.Valor;
+                    await _saldoService.UpdateSaldo(currentSaldo);
+
+                    response.Saldo = currentSaldo.Valor;
+                    response.Limite = cliente.Limite;
+
+                    return Ok(response);
+                }
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex);
+            }
         }
 
 

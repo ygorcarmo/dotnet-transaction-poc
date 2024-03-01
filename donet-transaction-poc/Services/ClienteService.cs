@@ -28,7 +28,7 @@ namespace donet_transaction_poc.Services
 
         public async Task<Cliente> GetCliente(int id)
         {
-            var cliente = await _dbService.GetAsync<Cliente>("SELECT * FROM clientes WHERE id=@id;", new { id });
+            var cliente = await _dbService.GetAsync<Cliente>("SELECT * FROM clientes WHERE id=1;", new { id });
             return cliente;
         }
 

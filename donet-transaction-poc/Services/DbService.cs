@@ -10,7 +10,7 @@ namespace donet_transaction_poc.Services
 
         public DbService(IConfiguration configuration)
         {
-            using (_db = new NpgsqlConnection(configuration.GetConnectionString("DefaultConnection"))) ;
+            _db = new NpgsqlConnection(configuration.GetConnectionString("DefaultConnection"));
         }
 
         public async Task<T> GetAsync<T>(string command, object parms)
