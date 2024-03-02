@@ -11,6 +11,11 @@ namespace donet_transaction_poc.Controllers
         private readonly IClienteService _clienteService;
         private readonly TransacaoService _transacaoService;
         private readonly SaldoService _saldoService;
+
+        public class Respose
+        {
+            public string message { get; set; }
+        }
         public RinhaController(IClienteService clienteService, TransacaoService transacaoService, SaldoService saldoService)
         {
             _clienteService = clienteService;
@@ -28,6 +33,12 @@ namespace donet_transaction_poc.Controllers
                 if (cliente is null)
                     return NotFound();
 
+                var currentSaldo = await _saldoService.GetSaldo(id);
+
+                if (transactionRequest.Descricao.Length > 10 || transactionRequest.Descricao.Length < 1)
+                    return BadRequest(new Respose { message = "A descricao nao pode ser nula ou com mais de 10 characters." });
+
+
                 if (transactionRequest.Tipo == "c")
                 {
                     var transacao = new Transacao
@@ -39,7 +50,6 @@ namespace donet_transaction_poc.Controllers
                     };
                     await _transacaoService.CreateTransacao(transacao);
 
-                    var currentSaldo = await _saldoService.GetSaldo(id);
                     currentSaldo.Valor += transacao.Valor;
                     await _saldoService.UpdateSaldo(currentSaldo);
 
@@ -48,41 +58,74 @@ namespace donet_transaction_poc.Controllers
 
                     return Ok(response);
                 }
-                return Ok(response);
+
+                if (transactionRequest.Tipo == "d")
+                {
+                    var totalCredit = currentSaldo.Valor + cliente.Limite;
+
+                    if (transactionRequest.Valor > totalCredit)
+                        return UnprocessableEntity(new Respose { message = "Saldo Insuficiente" });
+
+                    var transacao = new Transacao
+                    {
+                        Cliente_Id = id,
+                        Descricao = transactionRequest.Descricao,
+                        Tipo = transactionRequest.Tipo,
+                        Valor = transactionRequest.Valor
+                    };
+                    await _transacaoService.CreateTransacao(transacao);
+
+                    currentSaldo.Valor -= transacao.Valor;
+                    await _saldoService.UpdateSaldo(currentSaldo);
+
+                    response.Saldo = currentSaldo.Valor;
+                    response.Limite = cliente.Limite;
+
+                    return Ok(response);
+                }
+
+                return BadRequest(new Respose { message = "Tipo the transacao nao supportada." });
+
             }
             catch (Exception ex)
             {
-                return BadRequest(ex);
+                return BadRequest(new Respose { message = ex.Message });
             }
         }
 
 
         [HttpGet("extrato")]
-        public ActionResult<Extrato> Get()
+        public async Task<ActionResult<Extrato>> Get(int id)
         {
-            var test = new Extrato
+            try
             {
-                Saldo = new SaldoExtratual
+
+                var cliente = await _clienteService.GetCliente(id);
+                if (cliente is null)
+                    return NotFound(new Respose { message = "Cliente nao encontrado" });
+
+                var currentSaldo = await _saldoService.GetSaldo(id);
+
+                var transacoes = await _transacaoService.GetTransacoesByClienteId(id);
+
+                var extrato = new Extrato
                 {
-                    Total = -9098,
-                    DataExtato = "2024-01-17T02:34:41.217753Z",
-                    Limite = 1000000
+                    Saldo = new SaldoExtratual
+                    {
+                        Total = currentSaldo.Valor,
+                        DataExtato = DateTime.UtcNow.ToString(),
+                        Limite = cliente.Limite
 
-                },
-                UltimasTransacoes = [
-                    new Transacao {
-                        Cliente_Id = 1,
-                        Descricao = "adasda",
-                        Id = 1,
-                        RealizadaEm = "asdasdas",
-                        Tipo = "d",
-                        Valor = 12314124
                     },
-                    new Transacao { }
-                ]
+                    UltimasTransacoes = transacoes
 
-            };
-            return Ok(test);
+                };
+                return Ok(extrato);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new Respose { message = ex.Message });
+            }
         }
     }
 }
